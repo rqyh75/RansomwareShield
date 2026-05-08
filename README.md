@@ -2,179 +2,155 @@
 
 <div align="center">
 
-<img src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-blue?style=for-the-badge" />
-<img src="https://img.shields.io/badge/language-C%20%7C%20C%23%20%7C%20JavaScript-green?style=for-the-badge" />
-<img src="https://img.shields.io/badge/status-Active-success?style=for-the-badge" />
-<img src="https://img.shields.io/badge/security-Ransomware%20Detection-red?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-blue?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Language-C%20%7C%20C%23%20%7C%20JavaScript-success?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Status-Active%20Development-orange?style=for-the-badge" />
+<img src="https://img.shields.io/badge/Security-Ransomware%20Detection-red?style=for-the-badge" />
 
-### 🚨 Windows-Based Early Ransomware Detection & Response System
+### 🚨 Windows-Based Early Ransomware Detection and Response System
 
-Using **Canary Files**, **Behavioral Analysis**, **MiniFilter Drivers**, and **ETW Monitoring**
+### using Canary Files & Behavioural Analysis
 
 </div>
 
 ---
 
-# ✨ Overview
+# 📖 Overview
 
-**RansomwareShield** is an advanced Windows-based ransomware detection and response system designed to detect suspicious ransomware behavior *before massive encryption damage happens*.
+**RansomwareShield** is a Windows-based cybersecurity project designed to detect and respond to ransomware attacks in their **early stages** before massive encryption damage occurs.
 
-The project combines:
+The system combines:
 
-* 🪤 **Dynamic Canary Files**
-* ⚡ **Behavioral Analysis**
-* 🧠 **ETW Process Monitoring**
-* 🛡️ **Kernel-Level Minifilter Driver**
-* 📊 **Real-Time Monitoring Dashboard**
-* 🔥 **Automatic Response Actions**
+* 🎯 **Dynamic Canary Files**
+* 🧠 **Behavioral Analysis**
+* ⚡ **Real-Time Detection**
+* 🛑 **Automated Response**
+* 📊 **Web-Based Monitoring Dashboard**
 
-Unlike traditional antivirus systems that depend heavily on signatures, **RansomwareShield focuses on behavior**, making it more effective against evolving ransomware threats.
+Unlike traditional antivirus solutions that rely heavily on signatures, RansomwareShield focuses on **behavior-driven detection** to identify suspicious ransomware activities such as:
+
+* Mass file encryption
+* Rapid file renaming
+* Suspicious process execution
+* Shadow copy deletion attempts
+* Unauthorized canary file access
 
 ---
 
-# 🎯 Key Features
+# ✨ Features
 
-## 🪤 Smart Canary Files
+## 🐤 Canary File Protection
 
-* Generates realistic fake documents
-* Mimics human-created files
-* Detects unauthorized access instantly
-* Dynamic file creation, renaming, and modification
+* Generates realistic fake files
+* Mimics human behavior using timestamps & metadata
+* Detects:
 
-## ⚡ Behavioral Detection
+  * Access
+  * Modification
+  * Rename
+  * Deletion
 
-* Monitors:
+---
 
-  * Mass file writes
-  * Rapid renaming
-  * Suspicious process execution
-  * Shadow copy deletion attempts
-  * Defender tampering
+## 🔍 Behavioral Detection Engine
 
-## 🧠 ETW Process Monitoring
+* Detects abnormal file write activity
+* Detects suspicious rename operations
+* Detects ransomware note creation
+* Detects malicious command lines using ETW
 
-* Uses **Event Tracing for Windows (ETW)**
-* Detects malicious PowerShell commands
-* Tracks suspicious process chains
+---
 
-## 🛡️ Kernel-Level Minifilter Driver
+## ⚙️ Minifilter Driver
 
+* Kernel-level monitoring
 * Intercepts:
 
-  * File writes
-  * File renames
-  * File creation requests
-* Blocks suspicious ransomware activity
+  * CREATE
+  * WRITE
+  * SET_INFORMATION operations
+* Uses Windows Filter Manager
 
-## 🚨 Automated Response
+---
 
+## 📡 ETW Process Monitoring
+
+* Monitors process creation events
+* Detects:
+
+  * PowerShell abuse
+  * vssadmin deletion commands
+  * Suspicious scripts
+  * Known malicious tools
+
+---
+
+## 🚨 Automated Response Agent
+
+* Assigns severity levels
 * Terminates malicious processes
-* Generates structured alerts
-* Sends logs to dashboard
-* Preserves forensic evidence
+* Sends alerts to dashboard
+* Stores forensic logs
 
-## 📊 Web-Based Dashboard
+---
 
-* Real-time monitoring
-* Severity visualization
+## 📊 Web Dashboard
+
+* Live monitoring
+* Alert visualization
 * Historical reports
-* Authentication system
-* MongoDB event storage
+* Severity filtering
+* System statistics
 
 ---
 
 # 🏗️ System Architecture
 
 ```text
-+-----------------------------------------------------------+
-|                    Web Dashboard                          |
-|          React + SpringBoot + MongoDB                    |
-+------------------------▲----------------------------------+
-                         |
-                    REST API
-                         |
-+-----------------------------------------------------------+
-|                    Response Agent                         |
-|      Correlation • Severity • Auto Response              |
-+-----------▲----------------▲----------------▲-------------+
-            |                |                |
-        Named Pipe      FltSendMessage      ETW
-            |                |                |
-+-----------+----+   +-------+------+   +-----+------------+
-| Canary Agent  |   | Minifilter   |   | ETW Process      |
-|               |   | Driver       |   | Monitor          |
-+----------------+  +--------------+   +------------------+
++------------------------------------------------------+
+|                  Web Dashboard                       |
+|      (React + SpringBoot + MongoDB)                 |
++-------------------------▲----------------------------+
+                          |
+                    REST API (JSON)
+                          |
++------------------------------------------------------+
+|                 Response Agent                       |
+|  - Correlation                                       |
+|  - Severity Assignment                               |
+|  - Process Termination                               |
+|  - Alert Logging                                     |
++---------▲-------------------▲------------------------+
+          |                   |
+          |                   |
+   Named Pipe         FltSendMessage
+          |                   |
++---------+-----+     +------+-------------------------+
+| Canary Agent |     | Minifilter Driver              |
+|               |     | Kernel-Level File Monitoring  |
++---------------+     +-------------------------------+
+
+                +------------------------------------+
+                | ETW Process Monitoring             |
+                | Event Tracing for Windows          |
+                +------------------------------------+
 ```
 
 ---
 
-# 🧩 Core Components
+# 🛠️ Tech Stack
 
-| Component             | Description                                |
-| --------------------- | ------------------------------------------ |
-| 🪤 Canary Agent       | Creates and monitors realistic decoy files |
-| 🛡️ Minifilter Driver | Kernel-level ransomware activity detection |
-| 🧠 ETW Monitor        | Tracks suspicious process behavior         |
-| ⚡ Response Agent      | Correlates alerts and executes actions     |
-| 📊 Dashboard          | Visualizes alerts and system activity      |
-
----
-
-# 🔥 Detection Techniques
-
-## ✔ Canary File Detection
-
-Detects:
-
-* File modification
-* File rename
-* File deletion
-* Unauthorized access
-
-## ✔ Behavioral Analysis
-
-Detects:
-
-* High-frequency writes
-* Mass renaming
-* Ransom note creation
-* Suspicious command-line patterns
-
-## ✔ Known Ransomware Indicators
-
-Monitors:
-
-* Malicious PowerShell commands
-* Ransomware extensions
-* Defender bypass attempts
-* Shadow copy deletion
-
----
-
-# ⚙️ Technologies Used
-
-## 💻 Backend & System Components
-
-* C#
-* C
-* Windows Driver Kit (WDK)
-* ETW (Event Tracing for Windows)
-* Named Pipes
-* JSON
-
-## 🌐 Dashboard
-
-* React
-* JavaScript
-* Tailwind CSS
-* SpringBoot
-* MongoDB
-
-## 🛠 Development Tools
-
-* Visual Studio 2022
-* VMware / VirtualBox
-* DebugView
+| Component          | Technology                   |
+| ------------------ | ---------------------------- |
+| Canary Agent       | C#                           |
+| Response Agent     | C#                           |
+| ETW Monitoring     | C# + ETW                     |
+| Minifilter Driver  | C + WDK                      |
+| Frontend Dashboard | React + Tailwind CSS         |
+| Backend Dashboard  | Java SpringBoot              |
+| Database           | MongoDB                      |
+| IPC                | Named Pipes + FltSendMessage |
+| IDE                | Visual Studio 2022           |
 
 ---
 
@@ -184,14 +160,13 @@ Monitors:
 RansomwareShield/
 │
 ├── CanaryAgent/
-├── MiniFilterDriver/
+├── MinifilterDriver/
 ├── ETWMonitor/
 ├── ResponseAgent/
 ├── DashboardFrontend/
 ├── DashboardBackend/
 ├── Dataset/
-├── Rules/
-├── Documentation/
+├── Docs/
 └── README.md
 ```
 
@@ -203,19 +178,18 @@ RansomwareShield/
 
 Before running the project, install:
 
-* Windows 10/11
+* Windows 10 / Windows 11
 * Visual Studio 2022
 * Windows Driver Kit (WDK)
 * Windows SDK
-* .NET SDK
 * Java JDK
 * Apache Maven
-* Node.js + npm
+* Node.js & npm
 * MongoDB
 
 ---
 
-# 🛠️ Installation
+# ⚡ Installation
 
 ## 1️⃣ Clone Repository
 
@@ -235,7 +209,7 @@ mvn spring-boot:run
 
 ---
 
-## 3️⃣ Build Dashboard Frontend
+## 3️⃣ Run Dashboard Frontend
 
 ```bash
 cd DashboardFrontend
@@ -245,80 +219,150 @@ npm run dev
 
 ---
 
-## 4️⃣ Build Canary Agent & Response Agent
+## 4️⃣ Build Minifilter Driver
 
-Open solution in **Visual Studio 2022** and build:
+Open solution in Visual Studio with WDK installed.
 
-```bash
-Build → Build Solution
+Build in:
+
+```text
+Release x64
 ```
 
 ---
 
-## 5️⃣ Build Minifilter Driver
+## 5️⃣ Run Canary Agent & Response Agent
 
-Using:
+```bash
+cd CanaryAgent
+dotnet run
 
-* WDK
-* Visual Studio Driver Project
-
-Then load the driver in **Test Mode**.
-
----
-
-# 📊 Dashboard Features
-
-* 📈 Real-time alerts
-* 🚨 Severity indicators
-* 📜 Historical reports
-* 🖥️ Monitoring status
-* 🔍 Alert filtering
-* 👤 User authentication
+cd ../ResponseAgent
+dotnet run
+```
 
 ---
 
 # 🧪 Testing Environment
 
-The system was tested inside isolated virtual machines using:
+⚠️ IMPORTANT:
+
+This project should ONLY be tested inside:
+
+* Virtual Machines
+* Isolated environments
+* Sandboxed systems
+
+Recommended:
 
 * VMware
 * VirtualBox
 
-Tested against ransomware families including:
-
-* Akira
-* LockBit
-* Makop
-* Medusa
-* Ghost
-* RansomHub
-* Interlock
+Never execute ransomware samples on a host machine.
 
 ---
 
-# 📚 Appendix A — User Manuals
+# 📌 Detection Capabilities
 
-## 👤 User Guide
-
-### ▶ Starting the System
-
-1. Launch the Response Agent
-2. Start Canary Agent
-3. Load Minifilter Driver
-4. Start ETW Monitoring
-5. Open Dashboard in browser
+| Detection Type        | Supported |
+| --------------------- | --------- |
+| Canary File Access    | ✅         |
+| Mass File Writes      | ✅         |
+| Mass Renaming         | ✅         |
+| Ransom Note Creation  | ✅         |
+| Suspicious PowerShell | ✅         |
+| Shadow Copy Deletion  | ✅         |
+| Known Malicious Tools | ✅         |
 
 ---
 
-### 🛡 Monitoring Alerts
+# 📷 Dashboard Preview
+
+## Main Dashboard
+
+* Live alerts
+* Severity statistics
+* Host activity
+* Monitoring status
+
+## Reports Page
+
+* Historical logs
+* Filtering
+* Trend analysis
+
+## Alerts Page
+
+* Real-time incidents
+* Alert details
+* Severity visualization
+
+---
+
+# 📚 Manual Usage
+
+The following user manual is based on **Appendix A: User Manuals** from the project report. 
+
+---
+
+# 👤 User Manual
+
+## 🔐 Login to Dashboard
+
+1. Open the dashboard in browser
+2. Enter:
+
+   * Username
+   * Password
+3. Click **Login**
+
+If no account exists:
+
+* Click **Sign Up**
+* Create a new account
+
+---
+
+## ▶️ Start Monitoring
+
+1. Start:
+
+   * Canary Agent
+   * Response Agent
+   * ETW Monitor
+   * Minifilter Driver
+2. Open dashboard
+3. Verify status shows:
+
+```text
+Monitoring Active
+```
+
+---
+
+## 🐤 Canary Files
+
+The system automatically:
+
+* Creates fake files
+* Places them in directories
+* Monitors them continuously
+
+Do NOT manually modify canary files.
+
+---
+
+## 🚨 Alert Monitoring
+
+When ransomware behavior is detected:
 
 The dashboard displays:
 
-* Severity level
-* Event type
-* Hostname
 * Timestamp
-* Response action
+* Severity
+* Source
+* Rule Name
+* Response Action
 
 Severity Levels:
 
@@ -329,45 +373,60 @@ Severity Levels:
 
 ---
 
-### ⚡ Automatic Response
+## 🛑 Automated Response
 
-When ransomware behavior is detected:
+For High/Critical threats:
 
-* Process may be terminated automatically
-* Alert sent to dashboard
-* Event logged locally
+* Suspicious process is terminated automatically
+* Alert is logged
+* Dashboard updates instantly
 
 ---
 
-### 📂 Viewing Reports
+## 📊 Reports
 
 Navigate to:
 
 ```text
-Dashboard → Reports
+Reports Page
 ```
 
-Available filters:
+Features:
 
-* Date range
-* Severity
-* Source
-* Hostname
+* Historical analysis
+* Filtering by severity
+* Event trends
+* Host analysis
 
 ---
 
-# 📖 Research & Academic Context
+## ⚙️ Settings
 
-This project was developed as a **Final Year Project** at:
+Administrators can:
 
-🎓 **Sultan Qaboos University**
-College of Science — Department of Computer Science
+* Manage accounts
+* Configure dashboard preferences
+* View monitoring settings
 
-Project Title:
+---
 
-> *Windows-Based Early Ransomware Detection and Response System using Canary Files and Behavioural Analysis*
+# 🔒 Security Notes
 
+* Designed specifically for Windows systems
+* Requires administrator privileges
+* Uses secure IPC mechanisms
+* Logs events locally for forensic analysis
 
+---
+
+# 📈 Future Improvements
+
+* 🌐 Network-based ransomware detection
+* ☁️ Cloud dashboard deployment
+* 🤖 Machine learning integration
+* 🔔 Email/SMS alerting
+* 🧩 SIEM integration
+* 🐧 Linux support
 
 ---
 
@@ -378,9 +437,23 @@ Project Title:
 * Liya Ahmed Al Azri
 * Aseel Ghusn Al Harthi
 
+---
+
+# 🎓 Academic Information
+
+**Sultan Qaboos University**
+College of Science
+Department of Computer Science
+
+Final Year Project — Spring 2026
+
 Supervisor:
 
 * Dr. Shadha Al Amri
+
+Examiner:
+
+* Dr. Ahmad Soleimani
 
 ---
 
@@ -390,26 +463,19 @@ This project is developed for educational and research purposes.
 
 ---
 
-# ⭐ Future Improvements
+# ⭐ Support the Project
 
-* AI-based anomaly detection
-* Network-level ransomware detection
-* Linux/macOS support
-* Cloud dashboard deployment
-* Threat intelligence integration
+If you like this project:
 
----
-
-# 💡 Inspiration
-
-> “Detect early. Respond instantly. Protect proactively.”
+🌟 Star the repository
+🍴 Fork the project
+🐛 Report issues
+💡 Suggest improvements
 
 ---
 
 <div align="center">
 
-## ⭐ If you like this project, give it a star ⭐
-
-🛡️ Stay Safe • Stay Secure • Stop Ransomware Early
+## 🛡️ Detect Early. Respond Fast. Stay Protected.
 
 </div>

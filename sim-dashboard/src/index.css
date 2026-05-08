@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --panel: 15 23 42;        /* slate-900-ish */
+  --panel2: 17 24 39;       /* slate-950-ish */
+  --border: 51 65 85;       /* slate-700-ish */
+}
+
+html.light body {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+html.light .bg-slate-950 {
+  background-color: #f1f5f9 !important;
+}
+
+html.light .bg-slate-900,
+html.light .bg-slate-900\/40,
+html.light .bg-slate-900\/35,
+html.light .bg-slate-900\/30,
+html.light .bg-slate-950\/40,
+html.light .bg-slate-950\/50 {
+  background-color: #ffffff !important;
+}
+
+html.light .text-white,
+html.light .text-slate-100 {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-200 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-300,
+html.light .text-slate-400,
+html.light .text-slate-500 {
+  color: #475569 !important;
+}
+
+html.light .border-slate-800,
+html.light .border-slate-700 {
+  border-color: #cbd5e1 !important;
+}
+
+:root {
+  --accent: #38bdf8;
+}
+
+[data-compact="true"] .settings-aware-padding {
+  padding: 0.75rem !important;
+}
+
+[data-compact="true"] .settings-aware-gap {
+  gap: 0.75rem !important;
+}
+
+[data-animations="false"] *,
+[data-animations="false"] *::before,
+[data-animations="false"] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+[data-theme="dark"] body {
+  background: #020617;
+  color: #e2e8f0;
+}
+
+[data-theme="midnight"] body {
+  background: #000814;
+  color: #e2e8f0;
+}
+
+[data-theme="slate"] body {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.accent-bg {
+  background-color: var(--accent);
+}
+
+.accent-text {
+  color: var(--accent);
+}
+
+.accent-border {
+  border-color: var(--accent);
+}
+
+.accent-ring:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+}

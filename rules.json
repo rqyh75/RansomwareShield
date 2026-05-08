@@ -1,0 +1,434 @@
+{
+  "version": "1.0",
+  "rules": [
+    {
+      "rule_id": "R1001",
+      "name": "Shadow Copy Deletion",
+      "description": "Detects attempts to delete volume shadow copies, a common ransomware technique to prevent recovery. Observed in Akira, LockBit, Makop, RansomHub, Ghost/Cring, Medusa, and others.",
+      "source": "process_monitor",
+      "severity": "high",
+      "patterns": [
+        "vssadmin.*delete.*shadows",
+        "wmic.*shadowcopy.*delete",
+        "wbadmin.*delete.*catalog",
+        "bcdedit.*recoveryenabled.*No",
+        "bcdedit.*bootstatuspolicy.*ignoreallfailures"
+      ],
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R1002",
+      "name": "LSASS Memory Dumping",
+      "description": "Detects attempts to dump LSASS process memory to extract credentials. Used by Akira, LockBit, Makop, RansomHub, Ghost/Cring, and others.",
+      "source": "process_monitor",
+      "severity": "critical",
+      "patterns": [
+        "rundll32.*comsvcs\\.dll.*MiniDump",
+        "procdump.*lsass",
+        ".*lsass\\.dmp"
+      ],
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R1003",
+      "name": "Credential Dumping and Discovery",
+      "description": "Detects commands used to dump credentials from various sources (NTDS, browser stores, Veeam) and perform Active Directory discovery. Common across multiple ransomware families.",
+      "source": "process_monitor",
+      "severity": "high",
+      "patterns": [
+        "ntdsutil.*ifm.*create.*full",
+        "esentutl.*Login Data",
+        "esentutl.*key4\\.db",
+        "sqlcmd.*VeeamBackup.*Credentials",
+        ".*mimikatz.*",
+        ".*lazagne.*",
+        ".*LaZagne.*",
+        ".*SharpHound.*",
+        ".*Bloodhound.*",
+        ".*secretsdump.*",
+        ".*Get-ADComputer.*",
+        ".*Get-ADUser.*",
+        ".*Get-ADGroup.*",
+        "net.*group.*domain admins",
+        "net.*group.*Domain Admins",
+        "net.*localgroup.*Administrators",
+        "net.*user.*\\/add"
+      ],
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R1004",
+      "name": "Process Termination (Targeted)",
+      "description": "Detects attempts to kill security-related or business-critical processes, a common ransomware precursor to avoid interference and maximize encryption impact.",
+      "source": "process_monitor",
+      "severity": "high",
+      "patterns": [
+        "taskkill.*\\/im\\s+(?:sqlwriter|winmysqladmin|w3sqlmgr|wxServer|wxServerView|sqlmangr|RAgui|supervise|Culture|Defwatch|winword|QBW32|QBDBMgr|qbupdate|axlbridge|httpd|fdlauncher|MsDtSrvr|java|360se|360doctor|wdswfsafe|fdhost|GDscan|ZhuDongFangYu|QBDBMgrN|mysqld|AutodeskDesktopApp|acwebbrowser|Creative Cloud|Adobe Desktop Service|CoreSync|Adobe CEF Helper|node|AdobeIPCBroker|sync-taskbar|sync-worker|InputPersonalization|AdobeCollabSync|BrCtrlCntr|BrCcUxSys|SimplyConnectionManager|Simply\\.SystemTrayIcon|fbguard|fbserver|ONENOTEM|wsa_service|koaly-exp-engine-service|TeamViewer_Service|TeamViewer|tv_w32|tv_x64|TitanV|Ssms|notepad|RdrCEF|oracle|ocssd|dbsnmp|synctime|agntsvc|isqlplussvc|xfssvccon|mydesktopservice|ocautoupds|encsvc|firefox|tbirdconfig|mydesktopqos|ocomm|dbeng50|sqbcoreservice|excel|infopath|msaccess|mspub|onenote|outlook|powerpnt|steam|thebat|thunderbird|visio|wordpad|bedbh|vxmon|benetns|bengien|pvlsvr|beserver|raw_agent_svc|vsnapvss|CagService|DellSystemDetect|EnterpriseClient|VeeamDeploymentSvc|vmms|msaccess|mspub|svchost|vmcompute|notepad|ocautoupds|ocomm|ocssd|oracle|onenote|outlook|powerpnt|explorer|sql|steam|synctime|vmwp|thebat|thunderbird|visio|winword|wordpad|xfssvccon|TeamViewer|agntsvc|dbsnmp|dbeng50|encsvc)"
+      ],
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R1005",
+      "name": "Security Tool Disablement",
+      "description": "Detects attempts to disable Windows Defender, real-time monitoring, and other security features. Used by Akira, LockBit, RansomHub, Ghost/Cring, and others.",
+      "source": "process_monitor",
+      "severity": "critical",
+      "patterns": [
+        "sc.*stop.*WinDefend",
+        "sc.*config.*WinDefend.*disabled",
+        "Set-MpPreference.*DisableRealtimeMonitoring",
+        "Set-MpPreference.*DisableBehaviorMonitoring",
+        "Set-MpPreference.*DisableArchiveScanning",
+        "Set-MpPreference.*DisableScriptScanning",
+        "Set-MpPreference.*DisableBlockAtFirstSeen",
+        "Set-MpPreference.*DisableIOAVProtection",
+        "reg.*add.*Windows Defender.*DisableRealtimeMonitoring",
+        "reg.*add.*Windows Defender.*DisableOnAccessProtection",
+        "reg.*add.*Windows Defender.*Exclusions.*Paths",
+        "Add-MpPreference.*ExclusionPath"
+      ],
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R1006",
+      "name": "Log Clearing",
+      "description": "Detects attempts to clear Windows event logs to hinder forensic investigation. Used by LockBit, RansomHub, Ghost/Cring, and others.",
+      "source": "process_monitor",
+      "severity": "medium",
+      "patterns": [
+        "wevtutil.*cl.*system",
+        "wevtutil.*cl.*security",
+        "wevtutil.*cl.*application",
+        "Remove-Item.*PSReadlineOption.*HistorySavePath"
+      ],
+      "response": "alert_only"
+    },
+    {
+      "rule_id": "R1007",
+      "name": "Account Manipulation",
+      "description": "Detects creation, modification, or deletion of user accounts, often for persistence or lateral movement.",
+      "source": "process_monitor",
+      "severity": "high",
+      "patterns": [
+        "net.*user.*\\/add",
+        "net.*localgroup.*administrators.*\\/add",
+        "net.*group.*domain admins.*\\/add",
+        "net.*group.*ESX Admins.*\\/add",
+        "net.*user.*\\/del",
+        "net.*user.*\\/active:no",
+        "net1.*user.*\\/add",
+        "net1.*localgroup.*administrators.*\\/add"
+      ],
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R1008",
+      "name": "Network Discovery",
+      "description": "Detects commands used to discover network topology, domain trusts, and system information. Often used for lateral movement planning.",
+      "source": "process_monitor",
+      "severity": "low",
+      "patterns": [
+        "nltest.*\\/dclist",
+        "nltest.*\\/domain_trusts",
+        "net.*group.*domain admins",
+        "net.*localgroup.*administrators",
+        "tasklist",
+        "systeminfo",
+        "ipconfig.*\\/all",
+        "route.*print",
+        "quser",
+        "query.*user",
+        "arp.*-a",
+        "get-service",
+        "get-psdrive",
+        "get-adcomputer"
+      ],
+      "response": "alert_only"
+    },
+    {
+      "rule_id": "R1009",
+      "name": "Lateral Movement Tools",
+      "description": "Detects execution of tools commonly used for lateral movement, such as PsExec, WMIC, and runas.",
+      "source": "process_monitor",
+      "severity": "high",
+      "patterns": [
+        "psexec.*-s.*cmd",
+        "wmic.*process.*call.*create",
+        "runas.*\\/netonly.*cmd",
+        ".*PsExec\\.exe.*",
+        ".*psexec\\.exe.*"
+      ],
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R1010",
+      "name": "Remote Access Software Installation",
+      "description": "Detects installation or execution of remote access tools (AnyDesk, ScreenConnect, TeamViewer, etc.) often used by ransomware operators for persistent access.",
+      "source": "process_monitor",
+      "severity": "medium",
+      "patterns": [
+        "AnyDesk\\.exe.*--install",
+        "ScreenConnect\\.ClientService\\.exe",
+        ".*dwagent\\.exe",
+        ".*TeamViewer\\.exe",
+        ".*Splashtop.*",
+        ".*Atera.*",
+        ".*ConnectWise.*",
+        ".*SimpleHelp.*",
+        ".*Zoho.*Assist",
+        ".*Fixme\\.it",
+        ".*Action1.*",
+        ".*ScreenConnect.*"
+      ],
+      "response": "alert_only"
+    },
+    {
+      "rule_id": "R1011",
+      "name": "Data Exfiltration",
+      "description": "Detects commands used to exfiltrate stolen data to cloud storage or remote servers (rclone, WinSCP, AzCopy, Mega).",
+      "source": "process_monitor",
+      "severity": "high",
+      "patterns": [
+        "rclone.*copy",
+        "winscp\\.com.*open",
+        ".*AzCopy.*",
+        ".*StorageExplorer\\.exe",
+        ".*mega.*"
+      ],
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R1012",
+      "name": "Archiving with Password",
+      "description": "Detects compression of files with a password, often used to prepare stolen data for exfiltration or to encrypt files.",
+      "source": "process_monitor",
+      "severity": "medium",
+      "patterns": [
+        "WinRAR\\.exe.*a.*-hp",
+        "7z\\.exe.*a.*-p",
+        "makecab"
+      ],
+      "response": "alert_only"
+    },
+    {
+      "rule_id": "R1013",
+      "name": "PowerShell Encoded Commands",
+      "description": "Detects PowerShell execution with encoded commands, a common obfuscation technique used by ransomware.",
+      "source": "process_monitor",
+      "severity": "medium",
+      "patterns": [
+        "powershell.*-encodedcommand",
+        "powershell.*-enc",
+        "powershell.*-nop.*-w.*hidden.*-encodedcommand"
+      ],
+      "response": "alert_only"
+    },
+    {
+      "rule_id": "R1014",
+      "name": "WMI Shadow Copy Removal",
+      "description": "Detects WMI commands used to remove shadow copies, a variant of the shadow copy deletion technique.",
+      "source": "process_monitor",
+      "severity": "high",
+      "patterns": [
+        "Get-WmiObject.*Win32_Shadowcopy.*Remove-WmiObject",
+        "wmic.*shadowcopy.*delete"
+      ],
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R1015",
+      "name": "Other Suspicious Commands",
+      "description": "Miscellaneous suspicious commands including certutil downloads, registry saves, and RDP enabling.",
+      "source": "process_monitor",
+      "severity": "medium",
+      "patterns": [
+        "certutil.*-f.*urlcache",
+        "reg.*save.*hklm\\\\system",
+        "reg.*save.*hklm\\\\sam",
+        "start.*lck\\.exe.*-p=\"\\\\\\\\",
+        "bcdedit.*set.*{default}.*recoveryenabled.*No",
+        "bcdedit.*set.*{default}.*bootstatuspolicy.*ignoreallfailures",
+        "netsh.*advfirewall.*firewall.*add.*rule.*name=\"rdp\".*action=allow",
+        "netsh.*advfirewall.*firewall.*set.*rule.*group=\"windows management instrumentation\".*enable=yes",
+        "reg.*add.*HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Terminal Server.*fDenyTSConnections.*0"
+      ],
+      "response": "alert_only"
+    },
+    {
+      "rule_id": "R2001",
+      "name": "Known Malicious Tool Execution",
+      "description": "Detects execution of tools commonly used by ransomware for credential theft, lateral movement, discovery, and persistence.",
+      "source": "process_monitor",
+      "severity": "high",
+      "executable_names": [
+        "mimikatz.exe", "lazagne.exe", "psexec.exe", "PsExec.exe", "adfind.exe", "Advanced IP Scanner.exe", "Advanced_IP_Scanner.exe", "netscan_n.exe", "ipscan-3.9.1", "MASSCAN.exe", "PCHunter.exe", "PCHunter64.exe", "SharpHound.exe", "AnyDesk.exe", "MobaXterm", "ngrok", "Radmin", "FileZilla", "rclone.exe", "WinSCP.exe", "WinRAR.exe", "WmiPrcSE.exe", "Aijkihsa.exe", "uXrierrx.exe", "7z.exe", "AdvancedRun.exe", "Atera", "Backstab.exe", "Bloodhound.exe", "Chocolatey", "Defender Control.exe", "ExtPassword", "FreeFileSync", "GMER.exe", "Impacket", "Ligolo", "LostMyPassword", "MEGA Ltd MegaSync", "ProcDump.exe", "procdump.exe", "PasswordFox", "PowerTool.exe", "Process Hacker.exe", "ProcessHacker.exe", "plink.exe", "Seatbelt", "ScreenConnect", "SoftPerfect Network Scanner", "Splashtop", "TDSSKiller", "TeamViewer.exe", "ThunderShell", "NLBrute", "NetPass", "CrackAccount", "AccountRestore", "GuLoader", "dfControl", "disable-defender.exe", "Hlpdrv.sys", "0th3r_av5.exe", "4avr64", "IOBitUnlocker", "NetScan", "wbadmin.exe", "vssadmin.exe", "vds.exe", "wbengine.exe", "vdsldr.exe", "BITSAdmin", "Cobalt Strike", "Sliver", "SMBExec", "CrackMapExec", "Kerberoast", "AngryIPScanner", "Nmap", "Metasploit", "PuTTY", "PuTTY.exe", "putty.exe", "IOX", "SharpShares.exe", "SharpZeroLogon.exe", "SharpGPPPass.exe", "SpnDump.exe", "NBT.exe", "BadPotato.exe", "God.exe", "HFS", "Ladon 911", "Web Shell", "conhost.exe", "Interlock RAT", "NodeSnake RAT", "Azure Storage Explorer", "StorageExplorer.exe", "AzCopy", "cht.exe", "Zoho Assist", "Fixme.it", "Action1", "Total Network Inventory", "TNIWinAgent", "secretsdump.py", "pdqdeploy.exe", "pdqinventory.exe", "eHorus", "N-able", "SimpleHelp", "BigFix", "gaze.exe", "openrdp.bat", "pu.exe", "FortiClient.exe", "Ivanti-Secure-Access-Client.exe", "GlobalProtect.exe", "Webex.exe", "AnyConnectVPN.exe", "Cisco-Secure-Client.exe", "zyzoom_antimalware.exe"
+      ],
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R3001",
+      "name": "Ransomware File Extensions",
+      "description": "Detects creation of files with known ransomware extensions, indicating encryption activity.",
+      "source": "minifilter",
+      "severity": "critical",
+      "extensions": [".abcd", ".lockbit", ".lockbitv2", ".mkp", ".interlock", ".1nt3rlock", ".medusa"],
+      "operation": "rename",
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R3002",
+      "name": "Ransom Note Filenames",
+      "description": "Detects creation of known ransom note files, a strong indicator of ransomware activity.",
+      "source": "minifilter",
+      "severity": "critical",
+      "file_names": [
+        "akira_readme.txt",
+        "How To Restore Your Files.txt",
+        "!README!.txt",
+        "!!!READ_ME_MEDUSA!!!.txt",
+        "!!!OPEN_ME!!!.txt"
+      ],
+      "operation": "create",
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R4001",
+      "name": "Mass File Renames",
+      "description": "Detects rapid renaming of many files with a ransomware extension, indicating active encryption.",
+      "source": "minifilter",
+      "severity": "critical",
+      "operation": "rename",
+      "extensions": [".abcd", ".lockbit", ".lockbitv2", ".mkp", ".interlock", ".1nt3rlock", ".medusa"],
+      "threshold": 30,
+      "window_seconds": 5,
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R4002",
+      "name": "Mass File Deletion of Backups",
+      "description": "Detects mass deletion of backup file extensions, a common pre-encryption step.",
+      "source": "process_monitor",
+      "severity": "high",
+      "patterns": [
+        "del.*\\/s.*\\/f.*\\/q.*\\.(VHD|bac|bak|wbcat|bkf|set|win|dsk)"
+      ],
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R5001",
+      "name": "Canary File Access",
+      "description": "A canary file has been accessed and this is considered malicious.",
+      "source": "canary",
+      "severity": "critical",
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R6001",
+      "name": "Defender Disablement via Registry",
+      "description": "Detects registry modifications to disable Windows Defender or its real-time protection.",
+      "source": "process_monitor",
+      "severity": "critical",
+      "registry_keys": [
+        "HKLM\\SOFTWARE\\Microsoft\\Windows Defender\\Exclusions\\Paths",
+        "HKLM\\SOFTWARE\\Microsoft\\Windows Defender\\Real-Time Protection\\DisableRealtimeMonitoring",
+        "HKLM\\SOFTWARE\\Microsoft\\Windows Defender\\Real-Time Protection\\DisableOnAccessProtection",
+        "HKLM\\SOFTWARE\\Microsoft\\Windows Defender\\Real-Time Protection\\DisableScanOnRealtimeEnable"
+      ],
+      "patterns": [
+        "reg.*add.*Windows Defender.*Exclusions",
+        "reg.*add.*Windows Defender.*Real-Time Protection.*DisableRealtimeMonitoring",
+        "reg.*add.*Windows Defender.*Real-Time Protection.*DisableOnAccessProtection"
+      ],
+      "response": "terminate_process"
+    },
+    {
+      "rule_id": "R6002",
+      "name": "Persistence via Run Keys",
+      "description": "Detects addition of persistence via registry Run keys, commonly used by ransomware to maintain access.",
+      "source": "process_monitor",
+      "severity": "high",
+      "registry_keys": [
+        "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\\XO1XADpO01",
+        "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\\Windows",
+        "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\\Chrome Updater"
+      ],
+      "patterns": [
+        "reg.*add.*HKCU\\\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run"
+      ],
+      "response": "alert_only"
+    },
+    {
+      "rule_id": "R6003",
+      "name": "Other Malicious Registry Modifications",
+      "description": "Detects registry changes that enable RDP, hide accounts, or modify LSA settings.",
+      "source": "process_monitor",
+      "severity": "medium",
+      "patterns": [
+        "reg.*add.*HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Terminal Server.*fDenyTSConnections.*0",
+        "reg.*add.*HKLM\\\\Software\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Winlogon\\\\SpecialAccounts\\\\Userlist",
+        "reg.*add.*HKLM\\\\System\\\\CurrentControlSet\\\\Control\\\\Lsa.*DisableRestrictedAdmin"
+      ],
+      "response": "alert_only"
+    },
+    {
+      "rule_id": "R7001",
+      "name": "Known Malicious IPs",
+      "description": "Detects network connections to IP addresses associated with ransomware command and control or exfiltration infrastructure.",
+      "source": "network",
+      "severity": "high",
+      "ip_addresses": [
+        "8.211.2.97", "45.95.67.41", "45.134.140.69", "45.135.232.2", "89.23.96.203", "188.34.188.7",
+        "193.106.175.107", "193.124.125.78", "193.233.254.21", "192.229.221.95", "193.201.9.224",
+        "62.233.50.25", "51.91.79.17", "70.37.82.20", "185.17.40.178", "185.229.191.41", "81.19.135.219",
+        "45.129.137.233", "172.67.129.176", "104.21.1.180", "81.19.135.220", "81.19.135.226",
+        "101.97.36.61", "168.100.9.137", "185.20.209.127", "185.230.212.83", "206.188.197.22",
+        "54.84.248.205", "141.98.9.137"
+      ],
+      "response": "alert_only"
+    },
+    {
+      "rule_id": "R7002",
+      "name": "Known Malicious Domains",
+      "description": "Detects network connections to domains associated with ransomware tool download, command and control, or data exfiltration.",
+      "source": "network",
+      "severity": "high",
+      "domains": [
+        "adobe-us-updatefiles.digital", "assist.zoho.eu", "eu1-dms.zoho.eu", "fixme.it",
+        "unattended.techinline.net", "grabify.link", "12301230.co", "samuelelena.co", "40031.co"
+      ],
+      "response": "alert_only"
+    },
+    {
+      "rule_id": "R7003",
+      "name": "Known Malicious URLs",
+      "description": "Detects network connections to URLs hosting ransomware payloads or tools.",
+      "source": "network",
+      "severity": "high",
+      "urls": [
+        "http://188.34.188.7/555/",
+        "http://89.23.96.203/333/",
+        "http://temp.sh/KnCqD/superloop.exe",
+        "https://grabify.link/Y33YXP",
+        "https://i.ibb.co/2KBydfw/112882618.png",
+        "https://12301230.co/npm/",
+        "https://samuelelena.co/npm/",
+        "https://40031.co/npm/"
+      ],
+      "response": "alert_only"
+    },
+    {
+      "rule_id": "R7004",
+      "name": "Suspicious User Agents",
+      "description": "Detects user agent strings commonly used by ransomware tools for network communication.",
+      "source": "network",
+      "severity": "low",
+      "user_agents": [
+        "mega.nz", "mega.co.nz", "gfs.userstorage.mega.nz",
+        "Mozilla/5.0 (Windows NT6.1)", "AppleWebKit/587.38 (KHTML, like Gecko)",
+        "Chrome/91.0.4472.77", "Safari/537.36", "Edge/91.0.864.37", "Firefox/89.0",
+        "Gecko/20100101", "curl/7.55.1", "Rclone/1.63.1"
+      ],
+      "response": "alert_only"
+    }
+  ]
+}

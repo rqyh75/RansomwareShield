@@ -17,7 +17,12 @@
 
 # 📖 Overview
 
-**RansomwareShield** is a Windows-based cybersecurity project designed to detect and respond to ransomware attacks in their **early stages** before massive encryption damage occurs.
+RansomwareShield
+Windows-Based Early Ransomware Detection & Response Framework
+RansomwareShield is a Windows-based cybersecurity project designed to detect, monitor, and respond to ransomware attacks during their early execution stages before large-scale file encryption and system damage occur.
+The project combines multiple defensive layers operating in both user mode and kernel mode to provide real-time ransomware detection through behavioral analysis, file system monitoring, process activity inspection, and automated defensive response mechanisms.
+Instead of relying solely on traditional signature-based antivirus detection, RansomwareShield focuses on behavior-driven analysis to identify suspicious activities commonly associated with modern ransomware attacks.
+.
 
 The system combines:
 

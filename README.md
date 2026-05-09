@@ -224,7 +224,7 @@ RansomwareShield/
 
 ---
 
-# 🚀 Getting Started
+# 🚀 Installation & Deployment Guide
 
 ## 📋 Requirements 
 Before running the project, you should have :
@@ -240,28 +240,173 @@ Before running the project, you should have :
 
 ---
 
-# 🧪 Testing Environment
+# ⚙️ Installation & Deployment Guide
 
 ⚠️ IMPORTANT:
 
-This project should ONLY be tested inside:
-
-* Virtual Machines
-* Isolated environments
-* Sandboxed systems
+RansomwareShield interacts with low-level Windows kernel components and should ONLY be deployed inside isolated virtual machine environments.
 
 Recommended:
 
 * VMware
 * VirtualBox
 
-Never execute ransomware samples on a host machine.
-
+Do NOT test ransomware samples on a host machine.
 ---
 
 # 📚 Manual Usage
 
-The following user manual is based on **Appendix A: User Manuals** from the project report. 
+## 🖥️ Step 1 — Setup Virtual Machine
+* Install Windows 10/11 inside a VM
+* Update Windows
+* Enable VM snapshots
+* Install all required software
+
+## 🛠️ Step 2 — Install Visual Studio & WDK
+
+Install:
+
+* Visual Studio Community 2022
+* Windows Driver Kit (WDK)
+* Windows SDK
+* x64/x86 C++ Spectre Libraries
+
+Enable workloads:
+
+* Desktop Development with C++
+* Windows Driver Development
+  
+## 🔐 Step 3 — Enable Test Signing Mode
+
+Open PowerShell as Administrator:
+
+```powershell
+bcdedit /set testsigning on
+```
+Reboot the virtual machine.
+
+After reboot:
+* Verify “Test Mode” appears on the desktop.
+  
+## ⚙️ Step 4 — Build the Minifilter Driver
+* Open Visual Studio as Administrator
+* Create:
+   * Kernel Mode Driver, Empty (KMDF)
+* Configure:
+  * Project Name: MiniFilter
+  * Platform: x64
+* Add:
+  * Driver.c
+* Copy the Minifilter source code into Driver.c
+  
+**Configure Driver Dependencies**
+
+Navigate to:
+
+```text
+Project → Properties → Linker → Input
+```
+
+Append:
+
+```text
+fltMgr.lib
+```
+
+Enable:
+
+* Driver Signing → Test Sign
+
+Build the solution.
+
+Generated driver:
+
+```text
+\MiniFilter\x64\Debug\MiniFilter.sys
+```
+
+## 📦 Step 5 — Register the Driver
+
+Open CMD as Administrator:
+
+```cmd 
+copy \x64\Debug\MiniFilter.sys C:\Windows\System32\drivers\
+```
+
+Register the service:
+
+```cmd 
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\MiniFilter" /v Type /t REG_DWORD /d 2 /f
+```
+(Additional registry configuration may be required.)
+
+## 🌐 Step 6 — Setup Dashboard
+
+Install:
+
+* Java JDK
+* Apache Maven
+* Node.js
+* MongoDB
+
+Add to Environment Variables:
+
+```cmd
+jdk-26.0.1\bin
+apache-maven-3.9.14\bin
+```
+
+Move:
+
+* sim-dashboard
+* backend-java
+
+to Desktop.
+
+Install frontend dependencies:
+```cmd
+cd Desktop\sim-dashboard
+npm install
+```
+Verify installation:
+```cmd
+node -v
+npm -v
+```
+## 🗄️ Step 7 — Configure MongoDB
+* Open MongoDB Compass
+* Create a new connection:
+   * siem_dashboard
+## 🐤 Step 8 — Build Canary Agent
+* Open CanaryAgent in Visual Studio
+* Build Solution
+* Run in Debug Mode
+## 🚨 Step 9 — Build Response Agent
+* Open ResponseAgent
+* Build Solution
+* Run in Debug Mode
+## 🔍 Step 10 — Run ETW Monitor
+* Open the ETW monitoring project
+* Build the solution
+* Run as Administrator
+## 🧪 Step 11 — Execute Ransomware Testing
+⚠️ VM ONLY
+* Execute ransomware sample
+* Observe:
+  * Canary alerts
+  * Minifilter detections
+  * ETW detections
+  * Process termination
+  * Dashboard logs
+## 📊 Step 12 — Monitor Dashboard
+
+Open the dashboard in browser and monitor:
+ * Alerts
+ * Severity Levels
+ * File Activity
+ * Process Activity
+ * Response Actions
+ * Detection Logs
 
 ---
 

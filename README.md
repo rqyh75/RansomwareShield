@@ -26,38 +26,29 @@ Instead of relying solely on traditional signature-based antivirus detection, Ra
 ### Core Detection Layers :
 
 * 🎯 **Dynamic Canary File Detection**
-* ⚡ **Kernel-level Minifilter Driver**
+* ⚙️ **Kernel-level Minifilter Driver**
 * 🔍 **ETW Process Event Monitoring**
 * 🧠 **Behavioral & Process Analysis**
 * 🛑 **Automated Threat Response**
 * 📊 **Web-Based Monitoring Dashboard**
 
-### Detection Capabilities :
-
-RansomwareShield is capable of detecting behaviors such as:
-
-* Mass file encryption attempts
-* Rapid file modification activity
-* Suspicious file renaming operations
-* Unauthorized canary file access
-* Ransom note creation behavior
-* Abnormal write-frequency patterns
-* Suspicious PowerShell and script execution
-* Shadow copy deletion attempts
-* Malicious process execution chains
-* Ransomware-related file extensions
-* Excessive I/O request behavior
  # 📌 Detection Capabilities
 
-| Detection Type        | Supported |
-| --------------------- | --------- |
-| Canary File Access    | ✅         |
-| Mass File Writes      | ✅         |
-| Mass Renaming         | ✅         |
-| Ransom Note Creation  | ✅         |
-| Suspicious PowerShell | ✅         |
-| Shadow Copy Deletion  | ✅         |
-| Known Malicious Tools | ✅         |
+| Detection Type                      | Supported |
+| ----------------------------------- | --------- |
+| Canary File Access                  | ✅         |
+| Mass File Encryption Attempts       | ✅         |
+| Rapid File Modification Activity    | ✅         |
+| Mass File Renaming                  | ✅         |
+| Ransom Note Creation                | ✅         |
+| Abnormal Write-Frequency Detection  | ✅         |
+| Suspicious PowerShell Execution     | ✅         |
+| Script-Based Execution Detection    | ✅         |
+| Shadow Copy Deletion Attempts       | ✅         |
+| Malicious Process Execution Chains  | ✅         |
+| Ransomware File Extension Detection | ✅         |
+| Excessive I/O Request Detection     | ✅         |
+
 
 ---
 
@@ -65,14 +56,17 @@ RansomwareShield is capable of detecting behaviors such as:
 
 ## 🐤 Canary Agent
 
-* Generates realistic fake files
-* Mimics human behavior using timestamps & metadata
-* Detects:
+The Canary Agent operates in user mode and is responsible for generating and monitoring decoy files that imitate realistic user documents.
 
-  * Access
-  * Modification
-  * Rename
-  * Deletion
+The agent creates believable fake files using generated datasets and continuously watches for unauthorized access, modification, deletion, or encryption attempts. Since ransomware commonly targets user documents first, interacting with these canary files acts as an early warning indicator.
+
+When suspicious activity is detected, the Canary Agent immediately sends alerts to the Response Agent using Named Pipes communication in JSON format.
+### Canary Agent Responsibilities
+* **Generate realistic decoy files**
+* **Monitor file access behavior**
+* **Detect unauthorized modifications**
+* **Trigger early ransomware alerts**
+* **Communicate alerts to the Response Agent**
 
 ---
 
@@ -87,45 +81,104 @@ RansomwareShield is capable of detecting behaviors such as:
 
 ## ⚙️ Minifilter Driver
 
-* Kernel-level monitoring
-* Intercepts:
+The Minifilter Driver operates at the Windows kernel level and monitors low-level file system operations in real time.
 
-  * CREATE
-  * WRITE
-  * SET_INFORMATION operations
-* Uses Windows Filter Manager
+The driver observes file creation, deletion, renaming, and modification activities to detect ransomware-like behaviors such as mass file encryption, abnormal write frequency, suspicious extensions, and ransom note creation patterns.
 
----
+The driver also supports defensive blocking capabilities by intercepting and denying malicious I/O requests when dangerous behavior thresholds are exceeded.
 
-## 📡 ETW Process Monitoring
+Communication between kernel mode and user mode is implemented using FltSendMessage.
 
-* Monitors process creation events
-* Detects:
-
-  * PowerShell abuse
-  * vssadmin deletion commands
-  * Suspicious scripts
-  * Known malicious tools
+## Minifilter Driver Responsibilities
+* **Monitor file system activity**
+* **Detect abnormal file operations**
+* **Detect ransomware extensions and notes**
+* **Track excessive write operations**
+* **Block malicious I/O requests**
+* **Send kernel alerts to user mode**
 
 ---
 
-## 🚨 Automated Response Agent
+## 🔍 ETW Process Monitoring
 
-* Assigns severity levels
-* Terminates malicious processes
-* Sends alerts to dashboard
-* Stores forensic logs
+The ETW Process Monitor uses Event Tracing for Windows (ETW) to observe process-related activities and suspicious execution behavior.
 
+This component monitors:
+
+* **Process creation**
+* **PowerShell execution**
+* **Script execution**
+* **Suspicious command-line arguments**
+** **Abnormal execution chains**
+* **Potential ransomware behaviors**
+
+Behavioral indicators are analyzed against a ransomware behavior dataset collected from public reports and threat intelligence references.
+
+The ETW monitor strengthens detection by identifying malicious activity that may not yet interact directly with files.
+
+## ETW Process Monitor Responsibilities
+* **Monitor process activity**
+* **Detect suspicious execution patterns**
+* **Analyze command-line behavior**
+* **Detect script abuse**
+* **Identify ransomware indicators**
+* **Generate behavioral alerts**
+
+
+---
+
+## 🚨 Response Agent
+
+The Response Agent acts as the central coordination and defensive response component of the framework.
+
+It receives alerts from:
+
+* **Canary Agent**
+* **Minifilter Driver**
+* **ETW Process Monitor**
+
+The Response Agent correlates incoming events, classifies threat severity, and performs automated response actions such as:
+
+* **Process termination**
+* **Alert forwarding**
+* **Event logging**
+* **Dashboard synchronization**
+
+The Response Agent also standardizes communication using JSON-formatted data exchange between all system components.
+
+## Response Agent Responsibilities
+
+* **Collect alerts from all modules**
+* **Correlate suspicious activities**
+* **Execute automated response actions**
+* **Terminate suspicious processes**
+* **Forward logs to the dashboard**
+* **Manage inter-component communication**
 ---
 
 ## 📊 Web Dashboard
 
-* Live monitoring
-* Alert visualization
-* Historical reports
-* Severity filtering
-* System statistics
+The Web-Based Dashboard provides centralized real-time monitoring and visualization for system alerts and ransomware activities.
 
+The dashboard displays:
+
+* **Detected ransomware events**
+* **Suspicious process information**
+* **Severity levels**
+* **Timestamps**
+* **Response actions**
+* **File activity logs**
+* **Detection statistics**
+
+The frontend was developed using React, while the backend uses Spring Boot APIs and MongoDB for event storage.
+
+## Dashboard Responsibilities
+* **Display real-time alerts**
+* **Visualize system activity**
+* **Store monitoring logs**
+* **Provide centralized monitoring**
+* **Display threat severity information**
+* **Improve system usability and analysis**
 ---
 
 # 🏗️ System Architecture

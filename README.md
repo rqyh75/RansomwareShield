@@ -17,27 +17,36 @@
 
 # 📖 Overview
 
-## RansomwareShield
+### 🛡️ RansomwareShield
 a Windows-based cybersecurity project designed to detect, monitor, and respond to ransomware attacks during their early execution stages before large-scale file encryption and system damage occur.
-The project combines multiple defensive layers operating in both user mode and kernel mode to provide real-time ransomware detection through behavioral analysis, file system monitoring, process activity inspection, and automated defensive response mechanisms.
+The project combines multiple defensive layers operating in both **user mode** and **kernel mode** to provide real-time ransomware detection through behavioral analysis, file system monitoring, process activity inspection, and automated defensive response mechanisms.
 Instead of relying solely on traditional signature-based antivirus detection, RansomwareShield focuses on behavior-driven analysis to identify suspicious activities commonly associated with modern ransomware attacks.
 .
 
-The system combines:
+### Core Detection Layers :
 
-* 🎯 **Dynamic Canary Files**
-* 🧠 **Behavioral Analysis**
-* ⚡ **Real-Time Detection**
-* 🛑 **Automated Response**
+* 🎯 **Dynamic Canary File Detection**
+* ⚡ **Kernel-level Minifilter Driver**
+* 🔍 **ETW Process Event Monitoring**
+* 🧠 **Behavioral & Process Analysis**
+* 🛑 **Automated Threat Response**
 * 📊 **Web-Based Monitoring Dashboard**
 
-Unlike traditional antivirus solutions that rely heavily on signatures, RansomwareShield focuses on **behavior-driven detection** to identify suspicious ransomware activities such as:
+### Detection Capabilities :
 
-* Mass file encryption
-* Rapid file renaming
-* Suspicious process execution
-* Shadow copy deletion attempts
+RansomwareShield is capable of detecting behaviors such as:
+
+* Mass file encryption attempts
+* Rapid file modification activity
+* Suspicious file renaming operations
 * Unauthorized canary file access
+* Ransom note creation behavior
+* Abnormal write-frequency patterns
+* Suspicious PowerShell and script execution
+* Shadow copy deletion attempts
+* Malicious process execution chains
+* Ransomware-related file extensions
+* Excessive I/O request behavior
 
 ---
 

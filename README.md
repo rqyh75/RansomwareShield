@@ -47,12 +47,23 @@ RansomwareShield is capable of detecting behaviors such as:
 * Malicious process execution chains
 * Ransomware-related file extensions
 * Excessive I/O request behavior
+ # 📌 Detection Capabilities
+
+| Detection Type        | Supported |
+| --------------------- | --------- |
+| Canary File Access    | ✅         |
+| Mass File Writes      | ✅         |
+| Mass Renaming         | ✅         |
+| Ransom Note Creation  | ✅         |
+| Suspicious PowerShell | ✅         |
+| Shadow Copy Deletion  | ✅         |
+| Known Malicious Tools | ✅         |
 
 ---
 
-# ✨ Features
+# ✨ Components 
 
-## 🐤 Canary File Protection
+## 🐤 Canary Agent
 
 * Generates realistic fake files
 * Mimics human behavior using timestamps & metadata

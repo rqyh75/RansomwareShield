@@ -256,13 +256,13 @@ Do NOT test ransomware samples on a host machine.
 
 # 📚 Manual Usage
 
-## 🖥️ Step 1 — Setup Virtual Machine
+### 🖥️ Step 1 — Setup Virtual Machine
 * Install Windows 10/11 inside a VM
 * Update Windows
 * Enable VM snapshots
 * Install all required software
 
-## 🛠️ Step 2 — Install Visual Studio & WDK
+### 🛠️ Step 2 — Install Visual Studio & WDK
 
 Install:
 
@@ -276,7 +276,7 @@ Enable workloads:
 * Desktop Development with C++
 * Windows Driver Development
   
-## 🔐 Step 3 — Enable Test Signing Mode
+### 🔐 Step 3 — Enable Test Signing Mode
 
 Open PowerShell as Administrator:
 
@@ -288,7 +288,7 @@ Reboot the virtual machine.
 After reboot:
 * Verify “Test Mode” appears on the desktop.
   
-## ⚙️ Step 4 — Build the Minifilter Driver
+### ⚙️ Step 4 — Build the Minifilter Driver
 * Open Visual Studio as Administrator
 * Create:
    * Kernel Mode Driver, Empty (KMDF)
@@ -325,7 +325,7 @@ Generated driver:
 \MiniFilter\x64\Debug\MiniFilter.sys
 ```
 
-## 📦 Step 5 — Register the Driver
+### 📦 Step 5 — Register the Driver
 
 Open CMD as Administrator:
 
@@ -340,7 +340,7 @@ reg add "HKLM\SYSTEM\CurrentControlSet\Services\MiniFilter" /v Type /t REG_DWORD
 ```
 (Additional registry configuration may be required.)
 
-## 🌐 Step 6 — Setup Dashboard
+### 🌐 Step 6 — Setup Dashboard
 
 Install:
 
@@ -373,23 +373,23 @@ Verify installation:
 node -v
 npm -v
 ```
-## 🗄️ Step 7 — Configure MongoDB
+### 🗄️ Step 7 — Configure MongoDB
 * Open MongoDB Compass
 * Create a new connection:
    * siem_dashboard
-## 🐤 Step 8 — Build Canary Agent
+### 🐤 Step 8 — Build Canary Agent
 * Open CanaryAgent in Visual Studio
 * Build Solution
 * Run in Debug Mode
-## 🚨 Step 9 — Build Response Agent
+### 🚨 Step 9 — Build Response Agent
 * Open ResponseAgent
 * Build Solution
 * Run in Debug Mode
-## 🔍 Step 10 — Run ETW Monitor
+### 🔍 Step 10 — Run ETW Monitor
 * Open the ETW monitoring project
 * Build the solution
 * Run as Administrator
-## 🧪 Step 11 — Execute Ransomware Testing
+### 🧪 Step 11 — Execute Ransomware Testing
 ⚠️ VM ONLY
 * Execute ransomware sample
 * Observe:
@@ -398,7 +398,7 @@ npm -v
   * ETW detections
   * Process termination
   * Dashboard logs
-## 📊 Step 12 — Monitor Dashboard
+### 📊 Step 12 — Monitor Dashboard
 
 Open the dashboard in browser and monitor:
  * Alerts

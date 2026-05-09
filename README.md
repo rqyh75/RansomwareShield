@@ -70,15 +70,6 @@ When suspicious activity is detected, the Canary Agent immediately sends alerts 
 
 ---
 
-## 🔍 Behavioral Detection Engine
-
-* Detects abnormal file write activity
-* Detects suspicious rename operations
-* Detects ransomware note creation
-* Detects malicious command lines using ETW
-
----
-
 ## ⚙️ Minifilter Driver
 
 The Minifilter Driver operates at the Windows kernel level and monitors low-level file system operations in real time.
@@ -215,22 +206,6 @@ The frontend was developed using React, while the backend uses Spring Boot APIs 
 
 ---
 
-# 🛠️ Tech Stack
-
-| Component          | Technology                   |
-| ------------------ | ---------------------------- |
-| Canary Agent       | C#                           |
-| Response Agent     | C#                           |
-| ETW Monitoring     | C# + ETW                     |
-| Minifilter Driver  | C + WDK                      |
-| Frontend Dashboard | React + Tailwind CSS         |
-| Backend Dashboard  | Java SpringBoot              |
-| Database           | MongoDB                      |
-| IPC                | Named Pipes + FltSendMessage |
-| IDE                | Visual Studio 2022           |
-
----
-
 # 📂 Project Structure
 
 ```bash
@@ -251,9 +226,8 @@ RansomwareShield/
 
 # 🚀 Getting Started
 
-## 📋 Prerequisites
-
-Before running the project, install:
+## 📋 Requirements 
+Before running the project, you should have :
 
 * Windows 10 / Windows 11
 * Visual Studio 2022
@@ -263,60 +237,6 @@ Before running the project, install:
 * Apache Maven
 * Node.js & npm
 * MongoDB
-
----
-
-# ⚡ Installation
-
-## 1️⃣ Clone Repository
-
-```bash
-git clone https://github.com/rqyh75/RansomwareShield.git
-cd RansomwareShield
-```
-
----
-
-## 2️⃣ Build Dashboard Backend
-
-```bash
-cd DashboardBackend
-mvn spring-boot:run
-```
-
----
-
-## 3️⃣ Run Dashboard Frontend
-
-```bash
-cd DashboardFrontend
-npm install
-npm run dev
-```
-
----
-
-## 4️⃣ Build Minifilter Driver
-
-Open solution in Visual Studio with WDK installed.
-
-Build in:
-
-```text
-Release x64
-```
-
----
-
-## 5️⃣ Run Canary Agent & Response Agent
-
-```bash
-cd CanaryAgent
-dotnet run
-
-cd ../ResponseAgent
-dotnet run
-```
 
 ---
 
@@ -336,43 +256,6 @@ Recommended:
 * VirtualBox
 
 Never execute ransomware samples on a host machine.
-
----
-
-# 📌 Detection Capabilities
-
-| Detection Type        | Supported |
-| --------------------- | --------- |
-| Canary File Access    | ✅         |
-| Mass File Writes      | ✅         |
-| Mass Renaming         | ✅         |
-| Ransom Note Creation  | ✅         |
-| Suspicious PowerShell | ✅         |
-| Shadow Copy Deletion  | ✅         |
-| Known Malicious Tools | ✅         |
-
----
-
-# 📷 Dashboard Preview
-
-## Main Dashboard
-
-* Live alerts
-* Severity statistics
-* Host activity
-* Monitoring status
-
-## Reports Page
-
-* Historical logs
-* Filtering
-* Trend analysis
-
-## Alerts Page
-
-* Real-time incidents
-* Alert details
-* Severity visualization
 
 ---
 
@@ -460,42 +343,6 @@ For High/Critical threats:
 
 ---
 
-## 📊 Reports
-
-Navigate to:
-
-```text
-Reports Page
-```
-
-Features:
-
-* Historical analysis
-* Filtering by severity
-* Event trends
-* Host analysis
-
----
-
-## ⚙️ Settings
-
-Administrators can:
-
-* Manage accounts
-* Configure dashboard preferences
-* View monitoring settings
-
----
-
-# 🔒 Security Notes
-
-* Designed specifically for Windows systems
-* Requires administrator privileges
-* Uses secure IPC mechanisms
-* Logs events locally for forensic analysis
-
----
-
 # 📈 Future Improvements
 
 * 🌐 Network-based ransomware detection
@@ -505,49 +352,7 @@ Administrators can:
 * 🧩 SIEM integration
 * 🐧 Linux support
 
----
 
-# 👨‍💻 Authors
-
-* Arwa Humaid Al Hajri
-* Ruqaiyah Hamed Al Hashmi
-* Liya Ahmed Al Azri
-* Aseel Ghusn Al Harthi
-
----
-
-# 🎓 Academic Information
-
-**Sultan Qaboos University**
-College of Science
-Department of Computer Science
-
-Final Year Project — Spring 2026
-
-Supervisor:
-
-* Dr. Shadha Al Amri
-
-Examiner:
-
-* Dr. Ahmad Soleimani
-
----
-
-# 📜 License
-
-This project is developed for educational and research purposes.
-
----
-
-# ⭐ Support the Project
-
-If you like this project:
-
-🌟 Star the repository
-🍴 Fork the project
-🐛 Report issues
-💡 Suggest improvements
 
 ---
 

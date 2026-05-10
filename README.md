@@ -7,7 +7,7 @@
 <img src="https://img.shields.io/badge/Status-Active%20Development-orange?style=for-the-badge" />
 <img src="https://img.shields.io/badge/Security-Ransomware%20Detection-red?style=for-the-badge" />
 
-## Windows-Based Early Ransomware Detection and Response System ### using Canary Files & Behavioural Analysis
+## Windows-Based Early Ransomware Detection and Response System using Canary Files & Behavioural Analysis
 <img src="banner.svg" width="100%"/>
 
 </div>

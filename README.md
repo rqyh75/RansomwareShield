@@ -173,38 +173,178 @@ The frontend was developed using React, while the backend uses Spring Boot APIs 
 ---
 
 # 🏗️ System Architecture
+<svg width="860" height="800" viewBox="0 0 860 800" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
 
-```text
-+------------------------------------------------------+
-|                  Web Dashboard                       |
-|      (React + SpringBoot + MongoDB)                 |
-+-------------------------▲----------------------------+
-                          |
-                    REST API (JSON)
-                          |
-+------------------------------------------------------+
-|                 Response Agent                       |
-|  - Correlation                                       |
-|  - Severity Assignment                               |
-|  - Process Termination                               |
-|  - Alert Logging                                     |
-+---------▲-------------------▲------------------------+
-          |                   |
-          |                   |
-   Named Pipe         FltSendMessage
-          |                   |
-+---------+-----+     +------+-------------------------+
-| Canary Agent |     | Minifilter Driver              |
-|               |     | Kernel-Level File Monitoring  |
-+---------------+     +-------------------------------+
+  <!-- Background -->
+  <rect width="860" height="800" fill="#0d1117" rx="12"/>
 
-                +------------------------------------+
-                | ETW Process Monitoring             |
-                | Event Tracing for Windows          |
-                +------------------------------------+
-```
+  <!-- Title -->
+  <text x="430" y="36" text-anchor="middle" fill="#e6edf3" font-size="15" font-weight="600" letter-spacing="0.5">Ransomware Detection &amp; Response System — Architecture</text>
 
----
+  <!-- ═══════════════════════════════════════════
+       TIER 1 — Kernel (Minifilter only)
+  ═══════════════════════════════════════════ -->
+  <rect x="28" y="56" width="804" height="120" rx="10" fill="#161b22" stroke="#f0883e" stroke-width="1" stroke-dasharray="6 4"/>
+  <text x="44" y="76" fill="#f0883e" font-size="10" font-weight="600" letter-spacing="1">KERNEL MODE</text>
+
+  <!-- Minifilter Driver -->
+  <rect x="264" y="86" width="332" height="76" rx="8" fill="#1a1006" stroke="#f0883e" stroke-width="1.2"/>
+  <text x="430" y="114" text-anchor="middle" fill="#f0883e" font-size="13" font-weight="600">Minifilter Driver  (Driver.c)</text>
+  <text x="430" y="133" text-anchor="middle" fill="#b36a28" font-size="10">Kernel-level file I/O interception · IRP_MJ_CREATE / WRITE / RENAME</text>
+  <text x="430" y="150" text-anchor="middle" fill="#b36a28" font-size="10">Threshold counters · ransomware ext / note detection · block I/O</text>
+
+  <!-- ═══════════════════════════════════════════
+       TIER 2 — User Mode Sensors
+  ═══════════════════════════════════════════ -->
+  <rect x="28" y="196" width="804" height="148" rx="10" fill="#161b22" stroke="#58a6ff" stroke-width="1" stroke-dasharray="6 4"/>
+  <text x="44" y="216" fill="#58a6ff" font-size="10" font-weight="600" letter-spacing="1">USER MODE — SENSORS</text>
+
+  <!-- ETW Process Monitor -->
+  <rect x="44" y="226" width="246" height="100" rx="8" fill="#0c1929" stroke="#58a6ff" stroke-width="1.2"/>
+  <text x="167" y="252" text-anchor="middle" fill="#58a6ff" font-size="13" font-weight="600">ETW Process Monitor</text>
+  <text x="167" y="271" text-anchor="middle" fill="#3b82c4" font-size="11">Process create / terminate</text>
+  <text x="167" y="288" text-anchor="middle" fill="#3b82c4" font-size="11">Full command-line capture</text>
+  <text x="167" y="305" text-anchor="middle" fill="#3b82c4" font-size="11">Malicious tool name blocklist</text>
+
+  <!-- Canary Agent -->
+  <rect x="570" y="226" width="246" height="100" rx="8" fill="#0c1929" stroke="#58a6ff" stroke-width="1.2"/>
+  <text x="693" y="252" text-anchor="middle" fill="#58a6ff" font-size="13" font-weight="600">Canary Agent  (C#)</text>
+  <text x="693" y="271" text-anchor="middle" fill="#3b82c4" font-size="11">Decoy file lifecycle management</text>
+  <text x="693" y="288" text-anchor="middle" fill="#3b82c4" font-size="11">Hash / size / timestamp / rename checks</text>
+  <text x="693" y="305" text-anchor="middle" fill="#3b82c4" font-size="11">Sends via CanaryAgentPipe (Named Pipe)</text>
+
+  <!-- ═══════════════════════════════════════════
+       IPC arrows (kernel → response, sensors → response)
+  ═══════════════════════════════════════════ -->
+
+  <!-- Minifilter → Response Agent -->
+  <line x1="430" y1="162" x2="430" y2="372" stroke="#f0883e" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr-orange)"/>
+  <rect x="310" y="192" width="240" height="18" rx="4" fill="#0d1117"/>
+  <text x="430" y="205" text-anchor="middle" fill="#f0883e" font-size="10">FltSendMessage  (binary struct)</text>
+
+  <!-- ETW → Response Agent (in-process) -->
+  <line x1="167" y1="326" x2="265" y2="418" stroke="#58a6ff" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr-blue)"/>
+  <text x="168" y="368" fill="#58a6ff" font-size="10" text-anchor="middle">in-process event</text>
+
+  <!-- Canary → Response Agent (named pipe) -->
+  <line x1="693" y1="326" x2="595" y2="418" stroke="#58a6ff" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr-blue)"/>
+  <text x="692" y="368" fill="#58a6ff" font-size="10" text-anchor="middle">Named Pipe (JSON)</text>
+
+  <!-- ═══════════════════════════════════════════
+       TIER 3 — Response Agent
+  ═══════════════════════════════════════════ -->
+  <rect x="28" y="362" width="804" height="196" rx="10" fill="#161b22" stroke="#3fb950" stroke-width="1" stroke-dasharray="6 4"/>
+  <text x="44" y="382" fill="#3fb950" font-size="10" font-weight="600" letter-spacing="1">USER MODE — RESPONSE AGENT  (C#)</text>
+
+  <!-- Rule Engine -->
+  <rect x="44" y="392" width="186" height="76" rx="7" fill="#0d1f16" stroke="#3fb950" stroke-width="1"/>
+  <text x="137" y="416" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="600">Rule Engine</text>
+  <text x="137" y="434" text-anchor="middle" fill="#2e7d45" font-size="10">rules.json pattern match</text>
+  <text x="137" y="450" text-anchor="middle" fill="#2e7d45" font-size="10">Regex · blocklist · thresholds</text>
+
+  <!-- Correlator -->
+  <rect x="246" y="392" width="186" height="76" rx="7" fill="#0d1f16" stroke="#3fb950" stroke-width="1"/>
+  <text x="339" y="416" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="600">Correlator</text>
+  <text x="339" y="434" text-anchor="middle" fill="#2e7d45" font-size="10">Cross-source event linking</text>
+  <text x="339" y="450" text-anchor="middle" fill="#2e7d45" font-size="10">Context enrichment</text>
+
+  <!-- Severity + Action Selector -->
+  <rect x="448" y="392" width="186" height="76" rx="7" fill="#0d1f16" stroke="#3fb950" stroke-width="1"/>
+  <text x="541" y="413" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="600">Severity Selector</text>
+  <text x="541" y="430" text-anchor="middle" fill="#2e7d45" font-size="10">Low / Medium → alert only</text>
+  <text x="541" y="446" text-anchor="middle" fill="#2e7d45" font-size="10">High / Critical → kill process</text>
+
+  <!-- Local Log -->
+  <rect x="650" y="392" width="166" height="76" rx="7" fill="#0d1f16" stroke="#3fb950" stroke-width="1"/>
+  <text x="733" y="416" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="600">Local Alert Log</text>
+  <text x="733" y="434" text-anchor="middle" fill="#2e7d45" font-size="10">Structured .txt on disk</text>
+  <text x="733" y="450" text-anchor="middle" fill="#2e7d45" font-size="10">Offline fallback</text>
+
+  <!-- internal arrows -->
+  <line x1="230" y1="430" x2="244" y2="430" stroke="#3fb950" stroke-width="1" marker-end="url(#arr-green)"/>
+  <line x1="432" y1="430" x2="446" y2="430" stroke="#3fb950" stroke-width="1" marker-end="url(#arr-green)"/>
+  <line x1="634" y1="430" x2="648" y2="430" stroke="#3fb950" stroke-width="1" marker-end="url(#arr-green)"/>
+
+  <!-- Process Terminator note -->
+  <rect x="44" y="484" width="590" height="60" rx="7" fill="#0d1f16" stroke="#3fb950" stroke-width="0.8" stroke-dasharray="4 3"/>
+  <text x="339" y="506" text-anchor="middle" fill="#3fb950" font-size="11" font-weight="600">Process Terminator  ·  KillProcess(pid)</text>
+  <text x="339" y="524" text-anchor="middle" fill="#2e7d45" font-size="10">Invoked by Severity Selector on High / Critical alerts · terminates offending process tree</text>
+
+  <line x1="541" y1="468" x2="541" y2="484" stroke="#3fb950" stroke-width="1" stroke-dasharray="3 2" marker-end="url(#arr-green)"/>
+
+  <!-- ═══════════════════════════════════════════
+       REST arrow to Dashboard
+  ═══════════════════════════════════════════ -->
+  <line x1="430" y1="558" x2="430" y2="608" stroke="#a371f7" stroke-width="1.5" marker-end="url(#arr-purple)"/>
+  <rect x="290" y="568" width="280" height="18" rx="4" fill="#0d1117"/>
+  <text x="430" y="581" text-anchor="middle" fill="#a371f7" font-size="10">HTTPS POST /api/events  (JSON alert)</text>
+
+  <!-- ═══════════════════════════════════════════
+       TIER 4 — Dashboard
+  ═══════════════════════════════════════════ -->
+  <rect x="28" y="598" width="804" height="180" rx="10" fill="#161b22" stroke="#a371f7" stroke-width="1" stroke-dasharray="6 4"/>
+  <text x="44" y="618" fill="#a371f7" font-size="10" font-weight="600" letter-spacing="1">WEB DASHBOARD</text>
+
+  <!-- Spring Boot -->
+  <rect x="44" y="628" width="230" height="132" rx="8" fill="#1a0f29" stroke="#a371f7" stroke-width="1.2"/>
+  <text x="159" y="652" text-anchor="middle" fill="#a371f7" font-size="13" font-weight="600">Spring Boot Backend  (Java)</text>
+  <text x="159" y="671" text-anchor="middle" fill="#7555b8" font-size="10">REST API · JWT auth</text>
+  <text x="159" y="687" text-anchor="middle" fill="#7555b8" font-size="10">Event normalisation · live buffer</text>
+  <text x="159" y="703" text-anchor="middle" fill="#7555b8" font-size="10">GET /api/dashboard  /alerts  /events</text>
+  <text x="159" y="719" text-anchor="middle" fill="#7555b8" font-size="10">GET /api/reports  /detection-activity</text>
+  <text x="159" y="735" text-anchor="middle" fill="#7555b8" font-size="10">POST /api/auth/login  /signup</text>
+
+  <!-- MongoDB -->
+  <rect x="290" y="628" width="190" height="132" rx="8" fill="#1a0f29" stroke="#a371f7" stroke-width="1.2"/>
+  <text x="385" y="652" text-anchor="middle" fill="#a371f7" font-size="13" font-weight="600">MongoDB</text>
+  <text x="385" y="671" text-anchor="middle" fill="#7555b8" font-size="10">siem_dashboard DB</text>
+  <text x="385" y="687" text-anchor="middle" fill="#7555b8" font-size="10">security_events collection</text>
+  <text x="385" y="703" text-anchor="middle" fill="#7555b8" font-size="10">users collection</text>
+  <text x="385" y="719" text-anchor="middle" fill="#7555b8" font-size="10">Persistent alert history</text>
+  <text x="385" y="735" text-anchor="middle" fill="#7555b8" font-size="10">Historical reports</text>
+
+  <!-- React Frontend -->
+  <rect x="496" y="628" width="320" height="132" rx="8" fill="#1a0f29" stroke="#a371f7" stroke-width="1.2"/>
+  <text x="656" y="652" text-anchor="middle" fill="#a371f7" font-size="13" font-weight="600">React Frontend  (Vite + Tailwind)</text>
+  <text x="656" y="671" text-anchor="middle" fill="#7555b8" font-size="10">Dashboard  ·  Alerts  ·  Detection Activity</text>
+  <text x="656" y="687" text-anchor="middle" fill="#7555b8" font-size="10">Reports  ·  Settings  ·  Auth</text>
+  <text x="656" y="703" text-anchor="middle" fill="#7555b8" font-size="10">Live polling — dashboard / alerts pages</text>
+  <text x="656" y="719" text-anchor="middle" fill="#7555b8" font-size="10">Historical query — reports page</text>
+  <text x="656" y="735" text-anchor="middle" fill="#7555b8" font-size="10">JWT stored client-side · React Router DOM</text>
+
+  <!-- Backend ↔ Mongo -->
+  <line x1="274" y1="694" x2="288" y2="694" stroke="#a371f7" stroke-width="1" marker-end="url(#arr-purple)"/>
+  <line x1="288" y1="706" x2="274" y2="706" stroke="#a371f7" stroke-width="1" marker-end="url(#arr-purple)"/>
+
+  <!-- Backend → React -->
+  <line x1="480" y1="694" x2="494" y2="694" stroke="#a371f7" stroke-width="1" marker-end="url(#arr-purple)"/>
+  <text x="487" y="688" text-anchor="middle" fill="#a371f7" font-size="9">GET</text>
+
+  <!-- ═══════════════════════════════════════════
+       LEGEND
+  ═══════════════════════════════════════════ -->
+  <rect x="28" y="788" width="804" height="2" rx="1" fill="#21262d"/>
+
+  <!-- ═══════════════════════════════════════════
+       ARROW MARKERS
+  ═══════════════════════════════════════════ -->
+  <defs>
+    <marker id="arr-orange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#f0883e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#58a6ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arr-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#3fb950" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arr-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#a371f7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+</svg>
+<img width="860" height="800" alt="architecture (1)" src="https://github.com/user-attachments/assets/c9139145-fbc4-4ba6-bb51-c948a8321be7" />
 
 # 📂 Project Structure
 
@@ -410,42 +550,7 @@ Open the dashboard in browser and monitor:
 
 ---
 
-# 👤 User Manual
-
-## 🔐 Login to Dashboard
-
-1. Open the dashboard in browser
-2. Enter:
-
-   * Username
-   * Password
-3. Click **Login**
-
-If no account exists:
-
-* Click **Sign Up**
-* Create a new account
-
----
-
-## ▶️ Start Monitoring
-
-1. Start:
-
-   * Canary Agent
-   * Response Agent
-   * ETW Monitor
-   * Minifilter Driver
-2. Open dashboard
-3. Verify status shows:
-
-```text
-Monitoring Active
-```
-
----
-
-## 🐤 Canary Files
+## 🐤 Canary Files - IMPORTANT
 
 The system automatically:
 
@@ -491,6 +596,8 @@ For High/Critical threats:
 # 📈 Future Improvements
 
 * 🌐 Network-based ransomware detection
+* 🔐 Encryption level detection
+* 📁 Suspecious API detection
 * ☁️ Cloud dashboard deployment
 * 🤖 Machine learning integration
 * 🔔 Email/SMS alerting

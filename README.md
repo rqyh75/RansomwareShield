@@ -344,7 +344,6 @@ The frontend was developed using React, while the backend uses Spring Boot APIs 
   </defs>
 
 </svg>
-<img width="860" height="800" alt="architecture (1)" src="https://github.com/user-attachments/assets/c9139145-fbc4-4ba6-bb51-c948a8321be7" />
 
 # 📂 Project Structure
 

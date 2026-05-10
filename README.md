@@ -1,8 +1,6 @@
 # 🛡️ RansomwareShield
 
 <div align="center">
-<img src="banner.svg" width="100%"/>
-
 
 <img src="https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-blue?style=for-the-badge" />
 <img src="https://img.shields.io/badge/Language-C%20%7C%20C%23%20%7C%20JavaScript-success?style=for-the-badge" />
@@ -12,6 +10,7 @@
 ### 🚨 Windows-Based Early Ransomware Detection and Response System
 
 ### using Canary Files & Behavioural Analysis
+<img src="banner.svg" width="100%"/>
 
 </div>
 
